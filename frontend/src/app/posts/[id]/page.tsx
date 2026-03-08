@@ -80,7 +80,7 @@ export default function PostDetailPage() {
   }
 
   return (
-    <article className="container py-8 max-w-3xl">
+    <article className="container py-8">
       {/* Header */}
       <header className="mb-8">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
