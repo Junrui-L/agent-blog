@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
@@ -87,6 +88,11 @@ export class PostsService {
       throw new ForbiddenException('无权修改此文章');
     }
 
+    // 乐观锁检查：版本号不匹配则拒绝更新
+    if (post.version !== dto.version) {
+      throw new ConflictException('文章已被他人修改，请刷新后重试');
+    }
+
     const updated = await this.prisma.post.update({
       where: { id },
       data: {
@@ -100,6 +106,7 @@ export class PostsService {
           dto.status === 'PUBLISHED' && post.status === 'DRAFT'
             ? new Date()
             : post.publishedAt,
+        version: { increment: 1 }, // 版本号 +1
       },
       include: { tags: { include: { tag: true } } },
     });

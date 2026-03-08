@@ -5,6 +5,7 @@ import {
   MaxLength,
   IsEnum,
   IsArray,
+  IsNumber,
 } from 'class-validator';
 
 export class CreatePostDto {
@@ -39,6 +40,9 @@ export class CreatePostDto {
 }
 
 export class UpdatePostDto {
+  @IsNumber()
+  version: number; // 乐观锁版本号，必填
+
   @IsOptional()
   @IsString()
   @MaxLength(255)
