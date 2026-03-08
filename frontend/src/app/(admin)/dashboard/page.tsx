@@ -43,6 +43,8 @@ export default function DashboardPage() {
     const result = await postsApi.delete(id)
     if (result.data !== undefined) {
       loadData()
+    } else {
+      alert(result.error || '删除失败，可能没有权限')
     }
   }
 

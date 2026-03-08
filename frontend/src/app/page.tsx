@@ -5,10 +5,12 @@ import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { postsApi, type Post } from '@/lib/api'
+import { useAuthStore } from '@/stores/auth'
 
 export default function HomePage() {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
+  const { isAuthenticated } = useAuthStore()
 
   useEffect(() => {
     loadPosts()
@@ -36,9 +38,16 @@ export default function HomePage() {
           <Link href="/posts">
             <Button>浏览文章</Button>
           </Link>
-          <Link href="/register">
-            <Button variant="outline">立即注册</Button>
-          </Link>
+          {!isAuthenticated && (
+            <Link href="/register">
+              <Button variant="outline">立即注册</Button>
+            </Link>
+          )}
+          {isAuthenticated && (
+            <Link href="/dashboard">
+              <Button variant="outline">进入后台</Button>
+            </Link>
+          )}
         </div>
       </section>
 
