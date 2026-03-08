@@ -92,7 +92,7 @@ export default function PostDetailPage() {
         
         <div className="flex items-center gap-4" style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>
           {post.tags?.slice(0, 1).map((tag) => (
-            <span key={tag.id} className="apple-tag" style={{ fontSize: '12px' }}>
+            <span key={`tag-${post.id}-${tag.id}`} className="apple-tag" style={{ fontSize: '12px' }}>
               {tag.name}
             </span>
           ))}

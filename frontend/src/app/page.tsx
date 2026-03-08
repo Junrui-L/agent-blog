@@ -69,7 +69,7 @@ export default function HomePage() {
                 <article className="apple-card h-full cursor-pointer">
                   <div className="flex items-center gap-2 mb-3">
                     {post.tags?.slice(0, 1).map((tag) => (
-                      <span key={tag.id} className="apple-tag" style={{ fontSize: '12px', padding: '4px 10px' }}>
+                      <span key={`tag-${post.id}-${tag.id}`} className="apple-tag" style={{ fontSize: '12px', padding: '4px 10px' }}>
                         {tag.name}
                       </span>
                     ))}
