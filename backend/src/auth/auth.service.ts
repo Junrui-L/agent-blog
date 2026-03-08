@@ -33,7 +33,7 @@ export class AuthService {
       },
     });
 
-    return this.generateTokens(user.id);
+    return this.generateTokens(user.id, user.role);
   }
 
   async login(dto: LoginDto) {
@@ -49,7 +49,7 @@ export class AuthService {
       throw new UnauthorizedException('账号已被封禁');
     }
 
-    return this.generateTokens(user.id);
+    return this.generateTokens(user.id, user.role);
   }
 
   async refresh(refreshToken: string) {
@@ -66,20 +66,20 @@ export class AuthService {
         throw new UnauthorizedException('用户不存在');
       }
 
-      return this.generateTokens(user.id);
+      return this.generateTokens(user.id, user.role);
     } catch {
       throw new UnauthorizedException('无效的刷新令牌');
     }
   }
 
-  private async generateTokens(userId: string) {
+  private generateTokens(userId: string, role: string) {
     const accessToken = this.jwt.sign(
-      { sub: userId },
+      { sub: userId, role },
       { expiresIn: '15m', secret: process.env.JWT_SECRET || 'access-secret' },
     );
 
     const refreshToken = this.jwt.sign(
-      { sub: userId },
+      { sub: userId, role },
       {
         expiresIn: '7d',
         secret: process.env.JWT_REFRESH_SECRET || 'refresh-secret',

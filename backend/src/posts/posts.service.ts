@@ -75,14 +75,15 @@ export class PostsService {
     return post;
   }
 
-  async update(userId: string, id: string, dto: UpdatePostDto) {
+  async update(userId: string, userRole: string, id: string, dto: UpdatePostDto) {
     const post = await this.prisma.post.findUnique({ where: { id } });
 
     if (!post) {
       throw new NotFoundException('文章不存在');
     }
 
-    if (post.authorId !== userId) {
+    // 管理员可以修改所有文章，普通用户只能修改自己的文章
+    if (userRole !== 'ADMIN' && post.authorId !== userId) {
       throw new ForbiddenException('无权修改此文章');
     }
 
@@ -106,14 +107,15 @@ export class PostsService {
     return updated;
   }
 
-  async remove(userId: string, id: string) {
+  async remove(userId: string, userRole: string, id: string) {
     const post = await this.prisma.post.findUnique({ where: { id } });
 
     if (!post) {
       throw new NotFoundException('文章不存在');
     }
 
-    if (post.authorId !== userId) {
+    // 管理员可以删除所有文章，普通用户只能删除自己的文章
+    if (userRole !== 'ADMIN' && post.authorId !== userId) {
       throw new ForbiddenException('无权删除此文章');
     }
 

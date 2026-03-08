@@ -41,12 +41,12 @@ export class PostsController {
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   update(@Request() req: any, @Param('id') id: string, @Body() dto: UpdatePostDto) {
-    return this.posts.update(req.user.userId, id, dto);
+    return this.posts.update(req.user.userId, req.user.role, id, dto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   remove(@Request() req: any, @Param('id') id: string) {
-    return this.posts.remove(req.user.userId, id);
+    return this.posts.remove(req.user.userId, req.user.role, id);
   }
 }

@@ -1,98 +1,215 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 博客系统后端 API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+基于 NestJS + Prisma + PostgreSQL 的博客系统后端服务。
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 技术栈
 
-## Description
+- Node.js + TypeScript
+- NestJS
+- Prisma 7.x
+- PostgreSQL
+- JWT 认证
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+## 快速开始
 
 ```bash
-$ npm install
+# 安装依赖
+npm install
+
+# 配置环境变量
+cp .env.example .env
+
+# 启动数据库
+docker run -d --name blog-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=blog -p 5432:5432 postgres:15
+
+# 运行迁移
+npx prisma migrate dev
+
+# 启动服务
+npm run start:dev
 ```
 
-## Compile and run the project
+## API 文档
 
-```bash
-# development
-$ npm run start
+### 基础信息
 
-# watch mode
-$ npm run start:dev
+- **Base URL**: `http://localhost:4000/api/v1`
+- **认证方式**: `Authorization: Bearer <access_token>`
 
-# production mode
-$ npm run start:prod
+### 认证接口
+
+#### 注册
+```
+POST /auth/register
+Body: { "username": "string", "email": "string", "password": "string" }
+Response: { "accessToken": "xxx", "refreshToken": "xxx" }
 ```
 
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+#### 登录
+```
+POST /auth/login
+Body: { "username": "string", "password": "string" }
+Response: { "accessToken": "xxx", "refreshToken": "xxx" }
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+#### 刷新Token
+```
+POST /auth/refresh
+Body: { "refreshToken": "xxx" }
+Response: { "accessToken": "xxx", "refreshToken": "xxx" }
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 文章接口
 
-## Resources
+#### 文章列表
+```
+GET /posts?page=1&limit=20&status=PUBLISHED
+Response: { "posts": [], "total": 0, "page": 1, "limit": 20 }
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+#### 文章详情
+```
+GET /posts/:id
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+#### 创建文章 (需认证)
+```
+POST /posts
+Headers: Authorization: Bearer <token>
+Body: { 
+  "title": "string", 
+  "slug": "string", 
+  "content": "string", 
+  "summary": "string?", 
+  "status": "DRAFT|PUBLISHED", 
+  "tagIds": [] 
+}
+```
 
-## Support
+#### 更新文章 (需认证)
+```
+PUT /posts/:id
+Headers: Authorization: Bearer <token>
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+#### 删除文章 (需认证)
+```
+DELETE /posts/:id
+Headers: Authorization: Bearer <token>
+```
 
-## Stay in touch
+### 评论接口
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+#### 文章评论列表
+```
+GET /comments/post/:postId?page=1&limit=20
+```
+
+#### 发表评论 (需认证)
+```
+POST /comments
+Headers: Authorization: Bearer <token>
+Body: { "postId": "uuid", "content": "string", "parentId": "uuid?" }
+```
+
+#### 更新评论 (需认证)
+```
+PUT /comments/:id
+```
+
+#### 删除评论 (需认证)
+```
+DELETE /comments/:id
+```
+
+### 标签接口
+
+#### 标签列表
+```
+GET /tags
+Response: [{ "id": "uuid", "name": "string", "slug": "string", "_count": { "posts": 0 } }]
+```
+
+#### 创建标签 (需认证)
+```
+POST /tags
+Body: { "name": "string", "slug": "string" }
+```
+
+#### 更新标签 (需认证)
+```
+PUT /tags/:id
+```
+
+#### 删除标签 (需认证)
+```
+DELETE /tags/:id
+```
+
+## 权限系统
+
+### 角色
+- **ADMIN**: 管理员，可以删除/修改所有文章
+- **USER**: 普通用户，只能删除/修改自己的文章
+
+### JWT Token Payload
+```json
+{
+  "sub": "用户ID",
+  "role": "ADMIN|USER",
+  "iat": 1234567890,
+  "exp": 1234567890
+}
+```
+
+## 测试账号
+
+| 用户名 | 密码 | 角色 |
+|--------|------|------|
+| admin | admin123 | ADMIN |
+| testuser | 123456 | USER |
+
+## 数据模型
+
+```
+User (用户)
+├── id: UUID
+├── username: string
+├── email: string
+├── passwordHash: string
+├── role: ADMIN | USER
+└── status: ACTIVE | BANNED
+
+Post (文章)
+├── id: UUID
+├── authorId: UUID
+├── title: string
+├── slug: string
+├── content: string
+├── status: DRAFT | PUBLISHED
+└── viewCount, likeCount, commentCount
+
+Comment (评论)
+├── id: UUID
+├── postId: UUID
+├── userId: UUID
+├── parentId: UUID?
+└── content: string
+
+Tag (标签)
+├── id: UUID
+├── name: string
+└── slug: string
+```
+
+## 环境变量
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/blog"
+JWT_SECRET="your-secret-key"
+JWT_REFRESH_SECRET="your-refresh-secret"
+```
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+MIT

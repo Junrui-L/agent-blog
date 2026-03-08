@@ -19,7 +19,7 @@ export class JwtAuthGuard implements CanActivate {
       const payload = this.jwt.verify(token, {
         secret: process.env.JWT_SECRET || 'access-secret',
       });
-      request.user = { userId: payload.sub };
+      request.user = { userId: payload.sub, role: payload.role };
       return true;
     } catch {
       throw new UnauthorizedException('无效的令牌');
