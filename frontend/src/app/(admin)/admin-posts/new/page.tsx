@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -28,8 +29,11 @@ export default function NewPostPage() {
 
   const loadTags = async () => {
     const response = await tagsApi.list()
+    console.log('Tags loaded:', response)
     if (response.data) {
       setTags(response.data)
+    } else {
+      console.error('Failed to load tags:', response.error)
     }
   }
 
@@ -124,29 +128,38 @@ export default function NewPostPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>标签</Label>
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <button
-                    key={tag.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectedTags(prev =>
-                        prev.includes(tag.id)
-                          ? prev.filter(id => id !== tag.id)
-                          : [...prev, tag.id]
-                      )
-                    }}
-                    className={`px-3 py-1 text-sm rounded-md border transition-colors ${
-                      selectedTags.includes(tag.id)
-                        ? 'bg-primary text-primary-foreground'
-                        : 'hover:bg-muted'
-                    }`}
-                  >
-                    {tag.name}
-                  </button>
-                ))}
-              </div>
+              <Label>标签 ({tags.length})</Label>
+              {tags.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  暂无标签，请先{' '}
+                  <Link href="/tags" className="text-primary hover:underline">
+                    创建标签
+                  </Link>
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <button
+                      key={tag.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedTags(prev =>
+                          prev.includes(tag.id)
+                            ? prev.filter(id => id !== tag.id)
+                            : [...prev, tag.id]
+                        )
+                      }}
+                      className={`px-3 py-1 text-sm rounded-md border transition-colors ${
+                        selectedTags.includes(tag.id)
+                          ? 'bg-primary text-primary-foreground'
+                          : 'hover:bg-muted'
+                      }`}
+                    >
+                      {tag.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
