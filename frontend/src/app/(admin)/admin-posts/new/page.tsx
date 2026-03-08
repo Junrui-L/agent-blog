@@ -128,7 +128,7 @@ export default function NewPostPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>标签 ({tags.length})</Label>
+              <Label>标签 ({tags.length}) - 已选: {selectedTags.length}</Label>
               {tags.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
                   暂无标签，请先{' '}
@@ -138,26 +138,31 @@ export default function NewPostPage() {
                 </p>
               ) : (
                 <div className="flex flex-wrap gap-2">
-                  {tags.map((tag) => (
-                    <button
-                      key={tag.id}
-                      type="button"
-                      onClick={() => {
-                        setSelectedTags(prev =>
-                          prev.includes(tag.id)
-                            ? prev.filter(id => id !== tag.id)
-                            : [...prev, tag.id]
-                        )
-                      }}
-                      className={`px-3 py-1 text-sm rounded-md border transition-colors ${
-                        selectedTags.includes(tag.id)
-                          ? 'bg-primary text-primary-foreground'
-                          : 'hover:bg-muted'
-                      }`}
-                    >
-                      {tag.name}
-                    </button>
-                  ))}
+                  {tags.map((tag) => {
+                    const isSelected = selectedTags.includes(tag.id)
+                    return (
+                      <button
+                        key={tag.id}
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          console.log('Tag clicked:', tag.name, 'isSelected:', isSelected)
+                          setSelectedTags(prev =>
+                            prev.includes(tag.id)
+                              ? prev.filter(id => id !== tag.id)
+                              : [...prev, tag.id]
+                          )
+                        }}
+                        className={`px-3 py-1.5 text-sm rounded-md border-2 transition-all ${
+                          isSelected
+                            ? 'bg-blue-500 text-white border-blue-500 font-medium'
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-blue-300 hover:bg-blue-50'
+                        }`}
+                      >
+                        {isSelected ? '✓ ' : ''}{tag.name}
+                      </button>
+                    )
+                  })}
                 </div>
               )}
             </div>
