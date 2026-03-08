@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { postsApi, type Post } from '@/lib/api'
 
 export default function PostsPage() {
@@ -22,37 +21,37 @@ export default function PostsPage() {
   }
 
   return (
-    <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-8">全部文章</h1>
+    <div className="container py-12">
+      <h1 className="mb-10">全部文章</h1>
       
       {loading ? (
-        <div className="text-center py-8 text-muted-foreground">加载中...</div>
+        <div className="text-center py-12" style={{ color: 'var(--muted-foreground)' }}>
+          加载中...
+        </div>
       ) : posts.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground">
+        <div className="text-center py-12" style={{ color: 'var(--muted-foreground)' }}>
           暂无文章
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2">
           {posts.map((post) => (
             <Link key={post.id} href={`/posts/${post.id}`}>
-              <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                    {post.tags?.slice(0, 1).map((tag) => (
-                      <span key={tag.id} className="px-2 py-1 bg-primary/10 rounded-md text-xs">
-                        {tag.name}
-                      </span>
-                    ))}
-                    <span>{new Date(post.createdAt).toLocaleDateString('zh-CN')}</span>
-                  </div>
-                  <CardTitle className="line-clamp-2">{post.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="line-clamp-3">
-                    {post.summary || post.content.slice(0, 100)}
-                  </CardDescription>
-                </CardContent>
-              </Card>
+              <article className="apple-card h-full cursor-pointer">
+                <div className="flex items-center gap-2 mb-3">
+                  {post.tags?.slice(0, 1).map((tag) => (
+                    <span key={tag.id} className="apple-tag" style={{ fontSize: '12px', padding: '4px 10px' }}>
+                      {tag.name}
+                    </span>
+                  ))}
+                  <span style={{ color: 'var(--muted-foreground)', fontSize: '14px' }}>
+                    {new Date(post.createdAt).toLocaleDateString('zh-CN')}
+                  </span>
+                </div>
+                <h3 className="mb-2" style={{ fontSize: '20px' }}>{post.title}</h3>
+                <p style={{ color: 'var(--muted-foreground)', fontSize: '15px', lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  {post.summary || post.content.slice(0, 120)}
+                </p>
+              </article>
             </Link>
           ))}
         </div>

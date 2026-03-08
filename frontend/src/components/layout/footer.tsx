@@ -2,19 +2,31 @@ import Link from 'next/link'
 
 export function Footer() {
   return (
-    <footer className="border-t py-6 md:py-8">
-      <div className="container flex flex-col items-center justify-between gap-4 md:flex-row">
-        <p className="text-sm text-muted-foreground">
-          © 2026 Blog. All rights reserved.
-        </p>
-        <nav className="flex gap-4">
-          <Link href="/about" className="text-sm text-muted-foreground hover:underline">
-            关于
-          </Link>
-          <Link href="/privacy" className="text-sm text-muted-foreground hover:underline">
-            隐私政策
-          </Link>
-        </nav>
+    <footer style={{ 
+      borderTop: '1px solid var(--border)',
+      padding: '24px 0',
+      marginTop: 'auto',
+    }}>
+      <div className="container">
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          gap: '16px',
+        }}>
+          <p style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>
+            © 2026 Blog. All rights reserved.
+          </p>
+          <nav style={{ display: 'flex', gap: '24px' }}>
+            <Link href="/about" style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>
+              关于
+            </Link>
+            <Link href="/privacy" style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>
+              隐私政策
+            </Link>
+          </nav>
+        </div>
       </div>
     </footer>
   )

@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { postsApi, type Post } from '@/lib/api'
 
 export default function PostsListPage() {
@@ -34,68 +32,83 @@ export default function PostsListPage() {
   }
 
   return (
-    <div className="container py-8">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">文章管理</h1>
+    <div className="container py-12">
+      <div className="flex items-center justify-between mb-10">
+        <h1>文章管理</h1>
         <Link href="/admin-posts/new">
-          <Button>写文章</Button>
+          <button className="btn-primary">写文章</button>
         </Link>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>全部文章</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="text-center py-8 text-muted-foreground">加载中...</div>
-          ) : posts.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              暂无文章，
-              <Link href="/admin-posts/new" className="text-primary hover:underline">写第一篇</Link>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {posts.map((post) => (
-                <div key={post.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-medium">{post.title}</h3>
-                      <span className={`px-2 py-0.5 text-xs rounded-md ${
-                        post.status === 'PUBLISHED' 
-                          ? 'bg-green-100 text-green-700' 
-                          : 'bg-yellow-100 text-yellow-700'
-                      }`}>
-                        {post.status === 'PUBLISHED' ? '已发布' : '草稿'}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>{post.tags?.[0]?.name || '未分类'}</span>
-                      <span>•</span>
-                      <span>{new Date(post.createdAt).toLocaleDateString('zh-CN')}</span>
-                      <span>•</span>
-                      <span>/{post.slug}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Link href={`/admin-posts/${post.id}/edit`}>
-                      <Button variant="ghost" size="sm">编辑</Button>
-                    </Link>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => handleDelete(post.id)}
+      <div className="apple-card">
+        <h2 style={{ marginBottom: '20px' }}>全部文章 ({posts.length})</h2>
+        
+        {loading ? (
+          <div className="text-center py-8" style={{ color: 'var(--muted-foreground)' }}>
+            加载中...
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="text-center py-8" style={{ color: 'var(--muted-foreground)' }}>
+            暂无文章，
+            <Link href="/admin-posts/new" style={{ color: 'var(--primary)' }}>写第一篇</Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {posts.map((post) => (
+              <div 
+                key={post.id} 
+                className="flex items-center justify-between p-5 rounded-xl"
+                style={{ 
+                  borderBottom: '1px solid var(--border)',
+                }}
+              >
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 style={{ fontSize: '17px', fontWeight: 600 }}>{post.title}</h3>
+                    <span 
+                      className="apple-tag"
+                      style={{ 
+                        background: post.status === 'PUBLISHED' ? 'rgba(52, 199, 89, 0.15)' : 'rgba(255, 149, 0, 0.15)',
+                        color: post.status === 'PUBLISHED' ? '#34c759' : '#ff9500',
+                      }}
                     >
-                      删除
-                    </Button>
+                      {post.status === 'PUBLISHED' ? '已发布' : '草稿'}
+                    </span>
                   </div>
+                  <p style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>
+                    {post.tags?.[0]?.name || '未分类'} · {new Date(post.createdAt).toLocaleDateString('zh-CN')} · /{post.slug}
+                  </p>
                 </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                <div className="flex items-center gap-4">
+                  <Link href={`/admin-posts/${post.id}/edit`}>
+                    <button style={{ 
+                      fontSize: '14px', 
+                      color: 'var(--primary)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}>
+                      编辑
+                    </button>
+                  </Link>
+                  <button 
+                    style={{ 
+                      fontSize: '14px', 
+                      color: '#ff3b30',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleDelete(post.id)}
+                  >
+                    删除
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

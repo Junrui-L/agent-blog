@@ -2,11 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import Link from 'next/link'
 import { postsApi, tagsApi, type Post, type Tag } from '@/lib/api'
 
 export default function EditPostPage() {
@@ -73,109 +69,128 @@ export default function EditPostPage() {
 
   if (fetching) {
     return (
-      <div className="container py-8 text-center text-muted-foreground">
+      <div className="container py-12 text-center" style={{ color: 'var(--muted-foreground)' }}>
         加载中...
       </div>
     )
   }
 
   return (
-    <div className="container py-8">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">编辑文章</h1>
-        <div className="flex gap-2">
-          <Button 
-            variant="outline" 
+    <div className="container py-12">
+      <div className="flex items-center justify-between mb-10">
+        <h1>编辑文章</h1>
+        <div className="flex gap-3">
+          <button 
+            className="btn-secondary"
             onClick={() => handleSubmit('DRAFT')}
             disabled={loading}
           >
             保存草稿
-          </Button>
-          <Button 
+          </button>
+          <button 
+            className="btn-primary"
             onClick={() => handleSubmit('PUBLISHED')}
             disabled={loading}
           >
             更新
-          </Button>
+          </button>
         </div>
       </div>
 
-      <form className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>基本信息</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">标题</Label>
-              <Input
-                id="title"
+      <div className="space-y-6">
+        {/* 基本信息 */}
+        <div className="apple-card">
+          <h2 style={{ marginBottom: '20px' }}>基本信息</h2>
+          
+          <div className="space-y-5">
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>
+                标题
+              </label>
+              <input
+                type="text"
+                className="apple-input"
                 placeholder="文章标题"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="slug">Slug</Label>
-              <Input
-                id="slug"
+            
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>
+                Slug
+              </label>
+              <input
+                type="text"
+                className="apple-input"
                 placeholder="article-url-slug"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="summary">摘要</Label>
-              <Textarea
-                id="summary"
+            
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>
+                摘要
+              </label>
+              <textarea
+                className="apple-input"
                 placeholder="文章摘要..."
                 rows={2}
                 value={formData.summary}
                 onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
+                style={{ resize: 'vertical' }}
               />
             </div>
-            <div className="space-y-2">
-              <Label>标签</Label>
+            
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>
+                标签 ({tags.length}) - 已选: {selectedTags.length}
+              </label>
               <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <button
-                    key={tag.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectedTags(prev =>
-                        prev.includes(tag.id)
-                          ? prev.filter(id => id !== tag.id)
-                          : [...prev, tag.id]
-                      )
-                    }}
-                    className={`px-3 py-1 text-sm rounded-md border transition-colors ${
-                      selectedTags.includes(tag.id)
-                        ? 'bg-primary text-primary-foreground'
-                        : 'hover:bg-muted'
-                    }`}
-                  >
-                    {tag.name}
-                  </button>
-                ))}
+                {tags.map((tag) => {
+                  const isSelected = selectedTags.includes(tag.id)
+                  return (
+                    <button
+                      key={tag.id}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setSelectedTags(prev =>
+                          prev.includes(tag.id)
+                            ? prev.filter(id => id !== tag.id)
+                            : [...prev, tag.id]
+                        )
+                      }}
+                      className="apple-tag"
+                      style={{ 
+                        cursor: 'pointer',
+                        background: isSelected ? 'var(--primary)' : 'var(--muted)',
+                        color: isSelected ? 'white' : 'var(--foreground)',
+                        border: 'none',
+                      }}
+                    >
+                      {isSelected ? '✓ ' : ''}{tag.name}
+                    </button>
+                  )
+                })}
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>内容 (Markdown)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Textarea
-              rows={20}
-              className="font-mono"
-              value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-            />
-          </CardContent>
-        </Card>
-      </form>
+        {/* 内容 */}
+        <div className="apple-card">
+          <h2 style={{ marginBottom: '20px' }}>内容 (Markdown)</h2>
+          <textarea
+            className="apple-input"
+            rows={20}
+            style={{ fontFamily: 'monospace', resize: 'vertical' }}
+            value={formData.content}
+            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+          />
+        </div>
+      </div>
     </div>
   )
 }

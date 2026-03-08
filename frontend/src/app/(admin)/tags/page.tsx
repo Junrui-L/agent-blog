@@ -1,10 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { tagsApi, type Tag } from '@/lib/api'
 
 export default function TagsPage() {
@@ -54,20 +50,21 @@ export default function TagsPage() {
   }
 
   return (
-    <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-8">标签管理</h1>
+    <div className="container py-12">
+      <h1 className="mb-10">标签管理</h1>
 
       {/* 创建标签 */}
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>创建标签</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="flex gap-4 items-end">
-            <div className="flex-1 space-y-2">
-              <Label htmlFor="name">标签名称</Label>
-              <Input
-                id="name"
+      <div className="apple-card mb-8">
+        <h2 style={{ marginBottom: '20px' }}>创建标签</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="flex gap-4 flex-wrap">
+            <div style={{ flex: '1', minWidth: '200px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>
+                标签名称
+              </label>
+              <input
+                type="text"
+                className="apple-input"
                 placeholder="例如：前端开发"
                 value={formData.name}
                 onChange={(e) => setFormData({
@@ -77,49 +74,68 @@ export default function TagsPage() {
                 })}
               />
             </div>
-            <div className="flex-1 space-y-2">
-              <Label htmlFor="slug">Slug</Label>
-              <Input
-                id="slug"
+            <div style={{ flex: '1', minWidth: '200px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>
+                Slug
+              </label>
+              <input
+                type="text"
+                className="apple-input"
                 placeholder="例如：frontend"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
               />
             </div>
-            <Button type="submit" disabled={submitting || !formData.name.trim() || !formData.slug.trim()}>
-              {submitting ? '创建中...' : '创建'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+            <div style={{ alignSelf: 'flex-end' }}>
+              <button 
+                type="submit" 
+                className="btn-primary"
+                disabled={submitting || !formData.name.trim() || !formData.slug.trim()}
+              >
+                {submitting ? '创建中...' : '创建'}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
 
       {/* 标签列表 */}
-      <Card>
-        <CardHeader>
-          <CardTitle>全部标签 ({tags.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="text-center py-8 text-muted-foreground">加载中...</div>
-          ) : tags.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">暂无标签</div>
-          ) : (
-            <div className="space-y-2">
-              {tags.map((tag) => (
-                <div key={tag.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <h3 className="font-medium">{tag.name}</h3>
-                    <p className="text-sm text-muted-foreground">/{tag.slug}</p>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {tag._count?.posts || 0} 篇文章
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <div className="apple-card">
+        <h2 style={{ marginBottom: '20px' }}>全部标签 ({tags.length})</h2>
+        
+        {loading ? (
+          <div className="text-center py-8" style={{ color: 'var(--muted-foreground)' }}>
+            加载中...
+          </div>
+        ) : tags.length === 0 ? (
+          <div className="text-center py-8" style={{ color: 'var(--muted-foreground)' }}>
+            暂无标签
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {tags.map((tag) => (
+              <div 
+                key={tag.id} 
+                className="p-4 rounded-xl"
+                style={{ 
+                  background: 'var(--muted)',
+                  transition: 'all 0.25s ease',
+                }}
+              >
+                <h3 style={{ fontSize: '17px', fontWeight: 600, marginBottom: '4px' }}>
+                  {tag.name}
+                </h3>
+                <p style={{ fontSize: '14px', color: 'var(--muted-foreground)', marginBottom: '8px' }}>
+                  /{tag.slug}
+                </p>
+                <p style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>
+                  {tag._count?.posts || 0} 篇文章
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
