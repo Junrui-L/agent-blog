@@ -52,9 +52,14 @@ export default function DashboardPage() {
     <div className="container py-8">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold">仪表盘</h1>
-        <Link href="/admin-posts/new">
-          <Button>写文章</Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/tags">
+            <Button variant="outline">标签管理</Button>
+          </Link>
+          <Link href="/admin-posts/new">
+            <Button>写文章</Button>
+          </Link>
+        </div>
       </div>
 
       {/* Stats Grid */}
