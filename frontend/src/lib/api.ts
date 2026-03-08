@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:4000/api/v1'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'
 
 interface ApiResponse<T> {
   data?: T
@@ -86,6 +86,11 @@ export interface Post {
   summary?: string
   status: 'DRAFT' | 'PUBLISHED'
   tags: Tag[]
+  author?: {
+    id: string
+    username: string
+    avatar?: string
+  }
   createdAt: string
   updatedAt: string
 }
@@ -136,7 +141,11 @@ export interface Comment {
   postId: string
   content: string
   parentId?: string
-  author: {
+  author?: {
+    id: string
+    username: string
+  }
+  user?: {
     id: string
     username: string
   }
