@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
+import { SearchPostsDto, SearchResultDto } from './dto/search.dto';
 
 @Injectable()
 export class PostsService {
@@ -129,5 +130,72 @@ export class PostsService {
     await this.prisma.post.delete({ where: { id } });
 
     return { message: '删除成功' };
+  }
+
+  /**
+   * 全文搜索文章
+   * 使用 ILIKE 实现简单搜索（后续可升级为全文搜索）
+   */
+  async search(dto: SearchPostsDto): Promise<{ articles: SearchResultDto[]; total: number }> {
+    const { q, limit = 10 } = dto;
+    const keyword = q.trim();
+    const searchPattern = `%${keyword}%`;
+
+    // 使用 Prisma 查询进行搜索
+    const posts = await this.prisma.post.findMany({
+      where: {
+        status: 'PUBLISHED',
+        OR: [
+          { title: { contains: keyword, mode: 'insensitive' } },
+          { content: { contains: keyword, mode: 'insensitive' } },
+          { summary: { contains: keyword, mode: 'insensitive' } },
+        ],
+      },
+      include: {
+        author: { select: { id: true, username: true } },
+        tags: { include: { tag: true } },
+      },
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const total = await this.prisma.post.count({
+      where: {
+        status: 'PUBLISHED',
+        OR: [
+          { title: { contains: keyword, mode: 'insensitive' } },
+          { content: { contains: keyword, mode: 'insensitive' } },
+          { summary: { contains: keyword, mode: 'insensitive' } },
+        ],
+      },
+    });
+
+    // 构建结果，包含高亮
+    const articles: SearchResultDto[] = posts.map((post) => {
+      // 高亮关键词
+      const highlightKeyword = (text: string) => {
+        const regex = new RegExp(`(${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<mark>$1</mark>');
+      };
+
+      return {
+        id: post.id,
+        title: post.title,
+        excerpt: post.summary || post.content.slice(0, 200),
+        tags: post.tags.map((pt) => ({ id: pt.tag.id, name: pt.tag.name })),
+        author: post.author,
+        publishedAt: post.publishedAt,
+        highlight: {
+          title: post.title.toLowerCase().includes(keyword.toLowerCase())
+            ? [highlightKeyword(post.title)]
+            : [],
+          content: post.content.toLowerCase().includes(keyword.toLowerCase())
+            ? [highlightKeyword(post.content.slice(0, 200))]
+            : [],
+        },
+      };
+    });
+
+    return { articles, total };
   }
 }

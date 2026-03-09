@@ -38,6 +38,15 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
     return this.client.postTag;
   }
 
+  // 暴露原生查询方法
+  $queryRaw<T = unknown>(query: TemplateStringsArray, ...values: unknown[]): Promise<T> {
+    return this.client.$queryRaw<T>(query, ...values);
+  }
+
+  $executeRaw(query: TemplateStringsArray, ...values: unknown[]): Promise<number> {
+    return this.client.$executeRaw(query, ...values);
+  }
+
   async onModuleInit() {
     await this.client.$connect();
   }

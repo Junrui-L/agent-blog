@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
+import { SearchPostsDto } from './dto/search.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('api/v1/posts')
@@ -31,6 +32,11 @@ export class PostsController {
     @Query('status') status?: 'DRAFT' | 'PUBLISHED',
   ) {
     return this.posts.findAll(page, limit, status);
+  }
+
+  @Get('search')
+  search(@Query() dto: SearchPostsDto) {
+    return this.posts.search(dto);
   }
 
   @Get(':id')
