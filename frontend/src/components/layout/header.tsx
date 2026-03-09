@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useAuthStore } from '@/stores/auth'
+import { SearchBar } from '@/components/search/SearchBar'
 
 export function Header() {
   const { isAuthenticated, user, logout } = useAuthStore()
@@ -38,6 +39,9 @@ export function Header() {
             <Link href="/posts" style={{ fontSize: '14px', color: 'var(--foreground)', opacity: 0.8 }}>
               文章
             </Link>
+            
+            {/* 搜索栏 */}
+            <SearchBar />
             
             {isAuthenticated ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
